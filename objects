@@ -1,0 +1,119 @@
+# Example 1: 10% Discount
+
+# Import classes from main.py
+from main import *
+
+# Create a User object for the first example
+user1 = User(user_id="U001", name="Falah", number="0505555555", email="falah@afshan.com")
+print(user1)
+
+# Create a Customer object inheriting from User
+customer1 = Customer(user_id="U001", name="Falah", number="0505555555", email="falah@afshan.com",
+                     is_loyalty_member=True, address="zayed uni", dateofbirth="1990-01-01")
+print(customer1)
+
+# Create a LoyaltyProgram object with 10% discount and enroll the customer
+loyalty_program1 = LoyaltyProgram(loyalty_id="LP001", discount_rate=0.1, membership_type="Gold", expiry_date="2025-12-31")
+print(loyalty_program1)
+customer1.enrollInLoyaltyProgram(loyalty_program1)
+
+# Create a Catalog with Ebooks
+catalog1 = Catalog(catalog_id="CAT001", catalog_name="Fiction", description="Catalog of fiction books")
+ebook1 = Ebook(title="The Great Gatsby", author="F. Scott Fitzgerald", publication_date="1925-04-10", genre="Fiction", price=15.99)
+ebook2 = Ebook(title="1984", author="George Orwell", publication_date="1949-06-08", genre="Dystopian", price=12.99)
+catalog1.addEbook(ebook1)
+catalog1.addEbook(ebook2)
+print(catalog1)
+
+# Customer browses the catalog
+print("Browsing catalog:", customer1.browseCatalog(catalog1))
+
+# Customer's ShoppingCart and adding items to the cart
+shopping_cart1 = customer1.shopping_cart
+shopping_cart1.addItem(ebook1)
+shopping_cart1.addItem(ebook2)
+print(shopping_cart1)
+
+# Create an Order for the Customer and add it to Customer's list of orders
+order1 = Order(order_id="O001", order_date="2024-11-06")
+order1.setTotalAmount(shopping_cart1.calculateTotal())
+order1.applyLoyaltyDiscount()
+customer1.addOrder(order1)
+print(order1)
+
+# Create an Invoice (aggregation with Order and Customer)
+invoice1 = Invoice(invoice_id="INV001", order_details=order1, customer_details=customer1)
+print(invoice1)
+print(f"VAT Amount: {invoice1.calculateVAT()}")
+
+# Calculate and display the total after VAT
+total_after_vat1 = invoice1.calculateTotalAfterVAT()
+print(f"Total after VAT: {total_after_vat1}")
+
+# Create a PaymentProcessor for the order
+order1.createPaymentProcessor(payment_id="P001", amount=total_after_vat1)
+
+# Process the payment
+print("Thank you for your payment!")
+order1.payment_processor.processPayment()
+print(f"Payment Status after processing: {order1.payment_processor.checkStatus()}")
+
+# Divider for clarity between examples
+print("\n" + "-" * 50 + "\n")
+
+# Example 2: 20% Discount
+
+# Create a User object for the second example
+user2 = User(user_id="U002", name="Rashed", number="0505111111", email="rashed@gmail.com")
+print(user2)
+
+# Create a Customer object inheriting from User
+customer2 = Customer(user_id="U002", name="Rashed", number="0505111111", email="rashed@gmail.com",
+                     is_loyalty_member=True, address="khalifa uni", dateofbirth="1985-02-14")
+print(customer2)
+
+# Create a LoyaltyProgram object with 20% discount and enroll the customer
+loyalty_program2 = LoyaltyProgram(loyalty_id="LP002", discount_rate=0.2, membership_type="Platinum", expiry_date="2025-12-31")
+print(loyalty_program2)
+customer2.enrollInLoyaltyProgram(loyalty_program2)
+
+# Create a Catalog with Ebooks
+catalog2 = Catalog(catalog_id="CAT002", catalog_name="Science Fiction", description="Catalog of sci-fi books")
+ebook3 = Ebook(title="Dune", author="Frank Herbert", publication_date="1965-08-01", genre="Science Fiction", price=19.99)
+ebook4 = Ebook(title="Foundation", author="Isaac Asimov", publication_date="1951-06-01", genre="Science Fiction", price=14.99)
+catalog2.addEbook(ebook3)
+catalog2.addEbook(ebook4)
+print(catalog2)
+
+# Customer browses the catalog
+print("Browsing catalog:", customer2.browseCatalog(catalog2))
+
+# Customer's ShoppingCart and adding items to the cart
+shopping_cart2 = customer2.shopping_cart
+shopping_cart2.addItem(ebook3)
+shopping_cart2.addItem(ebook4)
+print(shopping_cart2)
+
+# Create an Order for the Customer and add it to Customer's list of orders
+order2 = Order(order_id="O002", order_date="2024-11-07")
+order2.setTotalAmount(shopping_cart2.calculateTotal())
+order2.applyBulkDiscount()
+customer2.addOrder(order2)
+print(order2)
+
+# Create an Invoice (aggregation with Order and Customer)
+invoice2 = Invoice(invoice_id="INV002", order_details=order2, customer_details=customer2)
+print(invoice2)
+print(f"VAT Amount: {invoice2.calculateVAT()}")
+
+# Calculate and display the total after VAT
+total_after_vat2 = invoice2.calculateTotalAfterVAT()
+print(f"Total after VAT: {total_after_vat2}")
+
+# Create a PaymentProcessor for the order
+order2.createPaymentProcessor(payment_id="P002", amount=total_after_vat2)
+
+# Process the payment
+print("Thank you for your payment!")
+order2.payment_processor.processPayment()
+print(f"Payment Status after processing: {order2.payment_processor.checkStatus()}")
