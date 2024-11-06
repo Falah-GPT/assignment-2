@@ -1,1 +1,465 @@
+# Base class representing a generic user in the system.
+class User:
+    def __init__(self, user_id, name, number, email):
+        """Initializes a User with user_id, name, number, and email."""
+        # Attributes are initialized here.
+        setattr(self, "_user_id", user_id)
+        setattr(self, "_name", name)
+        setattr(self, "_number", number)
+        setattr(self, "_email", email)
 
+    # Returns a string representation of the User.
+    def __str__(self):
+        return f"User [ID: {self._user_id}, Name: {self._name}, Number: {self._number}, Email: {self._email}]"
+
+    # Getters and Setters
+    def setUserId(self, user_id):
+        setattr(self, "_user_id", user_id)
+
+    def getUserId(self):
+        return self._user_id
+
+    def setName(self, name):
+        setattr(self, "_name", name)
+
+    def getName(self):
+        return self._name
+
+    def setNumber(self, number):
+        setattr(self, "_number", number)
+
+    def getNumber(self):
+        return self._number
+
+    def setEmail(self, email):
+        setattr(self, "_email", email)
+
+    def getEmail(self):
+        return self._email
+
+# Inheritance: Customer inherits from User, indicating that Customer is a specialized type of User.
+class Customer(User):
+    def __init__(self, user_id, name, number, email, is_loyalty_member, address, dateofbirth):
+        """Initializes a Customer with inherited User attributes and additional customer-specific details."""
+        super().__init__(user_id, name, number, email) # Inherits properties from User
+        setattr(self, "_is_loyalty_member", is_loyalty_member)
+        setattr(self, "_address", address)
+        setattr(self, "_dateofbirth", dateofbirth)
+        # Association: Customer can be enrolled in a LoyaltyProgram, but it does not "own" it.
+        self.loyalty_program = None
+        # Composition: Customer "owns" a ShoppingCart, meaning the cart lifecycle is tied to the customer.
+        self.shopping_cart = ShoppingCart()
+        # Association: Customer can have multiple Orders, but it does not "own" them in a strict lifecycle sense.
+        self.orders = []
+
+    # Provides a string representation of the customer and their orders.
+    def __str__(self):
+        base_info = (f"Customer [ID: {self._user_id}, Name: {self._name}, "
+                     f"Loyalty Member: {self._is_loyalty_member}, Address: {self._address}]")
+
+        if not self.orders:
+            return base_info
+        else:
+            orders_str = "\n".join(str(order) for order in self.orders)
+            return f"{base_info}\nOrders:\n{orders_str}"
+
+    def addOrder(self, order):
+        """Associates an existing order with this customer."""
+        self.orders.append(order)
+
+    def viewOrders(self):
+        """Returns a list of the customer's orders."""
+        return "\n".join(str(order) for order in self.orders) if self.orders else "No orders found."
+
+    # Getters and Setters
+    def setIsLoyaltyMember(self, is_loyalty_member):
+        self._is_loyalty_member = is_loyalty_member
+
+    def getIsLoyaltyMember(self):
+        return self._is_loyalty_member
+
+    def setAddress(self, address):
+        self._address = address
+
+    def getAddress(self):
+        return self._address
+
+    def setDateOfBirth(self, dateofbirth):
+        self._dateofbirth = dateofbirth
+
+    def getDateOfBirth(self):
+        return self._dateofbirth
+
+    def enrollInLoyaltyProgram(self, loyalty_program):
+        """Associates the customer with a LoyaltyProgram."""
+        self.loyalty_program = loyalty_program
+
+    def browseCatalog(self, catalog):
+        """Browse a given catalog and return a formatted list of ebooks."""
+        ebooks = catalog.browseEbooks()
+        return "\n".join(str(ebook) for ebook in ebooks) if ebooks else "No ebooks available."
+
+# Represents a loyalty program with a discount rate and expiry date.
+class LoyaltyProgram:
+    def __init__(self, loyalty_id, discount_rate, membership_type, expiry_date):
+        """Initializes a LoyaltyProgram with loyalty_id, discount_rate, membership_type, and expiry_date."""
+        setattr(self, "_loyalty_id", loyalty_id)
+        setattr(self, "_discount_rate", discount_rate)
+        setattr(self, "_membership_type", membership_type)
+        setattr(self, "_expiry_date", expiry_date)
+
+    def __str__(self):
+        # Returns a string representation of the LoyaltyProgram.
+        return (f"LoyaltyProgram [ID: {self._loyalty_id}, Discount: {self._discount_rate}, "
+                f"Type: {self._membership_type}, Expiry: {self._expiry_date}]")
+
+    # Getters and Setters
+    def setLoyaltyId(self, loyalty_id):
+        setattr(self, "_loyalty_id", loyalty_id)
+
+    def getLoyaltyId(self):
+        return self._loyalty_id
+
+    def setDiscountRate(self, discount_rate):
+        setattr(self, "_discount_rate", discount_rate)
+
+    def getDiscountRate(self):
+        return self._discount_rate
+
+    def setMembershipType(self, membership_type):
+        setattr(self, "_membership_type", membership_type)
+
+    def getMembershipType(self):
+        return self._membership_type
+
+    def setExpiryDate(self, expiry_date):
+        setattr(self, "_expiry_date", expiry_date)
+
+    def getExpiryDate(self):
+        return self._expiry_date
+
+
+# Represents a catalog of ebooks that can be managed.
+class Catalog:
+    def __init__(self, catalog_id, catalog_name, description):
+        """Initializes a Catalog with catalog_id, catalog_name, description, and an empty ebook list."""
+        setattr(self, "_catalog_id", catalog_id)
+        setattr(self, "_catalog_name", catalog_name)
+        setattr(self, "_description", description)
+        # Association: Catalog manages a list of Ebook objects.
+        setattr(self, "_ebooks", [])  # List of Ebook objects
+
+    # Returns a string representation of the Catalog.
+    def __str__(self):
+        return f"Catalog [ID: {self._catalog_id}, Name: {self._catalog_name}, Description: {self._description}]"
+
+    # Getters and Setters for catalog attributes
+    def setCatalogId(self, catalog_id):
+        setattr(self, "_catalog_id", catalog_id)
+
+    def getCatalogId(self):
+        return self._catalog_id
+
+    def setCatalogName(self, catalog_name):
+        setattr(self, "_catalog_name", catalog_name)
+
+    def getCatalogName(self):
+        return self._catalog_name
+
+    def setDescription(self, description):
+        setattr(self, "_description", description)
+
+    def getDescription(self):
+        return self._description
+
+    # Getter and Setter for ebooks list
+    def setEbooks(self, ebooks):
+        """Sets the list of Ebook objects for this catalog."""
+        if isinstance(ebooks, list) and all(isinstance(ebook, Ebook) for ebook in ebooks):
+            self._ebooks = ebooks
+        else:
+            raise ValueError("Ebooks must be a list of Ebook objects.")
+
+    def getEbooks(self):
+        """Returns the list of Ebook objects in this catalog."""
+        return self._ebooks
+
+    # Additional methods for managing ebooks
+    def addEbook(self, ebook):
+        """Adds an ebook to the catalog."""
+        self._ebooks.append(ebook)
+
+    def removeEbook(self, ebook_id):
+        """Removes an ebook from the catalog by ebook title."""
+        self._ebooks = [ebook for ebook in self._ebooks if ebook.getTitle() != ebook_id]
+
+    def browseEbooks(self):
+        """Returns the list of ebooks in the catalog."""
+        return self._ebooks
+
+# Represents an ebook with title, author, genre, and price.
+class Ebook:
+    def __init__(self, title, author, publication_date, genre, price):
+        """Initializes an Ebook with title, author, publication_date, genre, and price."""
+        setattr(self, "_title", title)
+        setattr(self, "_author", author)
+        setattr(self, "_publication_date", publication_date)
+        setattr(self, "_genre", genre)
+        setattr(self, "_price", price)
+
+    def __str__(self):
+        # Returns a string representation of the Ebook.
+        return (f"Ebook [Title: {self._title}, Author: {self._author}, "
+                f"Genre: {self._genre}, Price: {self._price}]")
+
+    # Getters and Setters
+    def setTitle(self, title):
+        setattr(self, "_title", title)
+
+    def getTitle(self):
+        return self._title
+
+    def setAuthor(self, author):
+        setattr(self, "_author", author)
+
+    def getAuthor(self):
+        return self._author
+
+    def setPublicationDate(self, publication_date):
+        setattr(self, "_publication_date", publication_date)
+
+    def getPublicationDate(self):
+        return self._publication_date
+
+    def setGenre(self, genre):
+        setattr(self, "_genre", genre)
+
+    def getGenre(self):
+        return self._genre
+
+    def setPrice(self, price):
+        setattr(self, "_price", price)
+
+    def getPrice(self):
+        return self._price
+
+# Represents a shopping cart that belongs to a customer.
+class ShoppingCart:
+    def __init__(self):
+        """Initializes an empty ShoppingCart with no items and a total price of zero."""
+        # Composition: ShoppingCart contains items (Ebooks), which are dependent on ShoppingCart.
+        setattr(self, "_cart_id", None)
+        setattr(self, "_customer_id", None)
+        setattr(self, "_items", [])
+        setattr(self, "_total_price", 0.0)
+
+    def __str__(self):
+        # Returns a string representation of the ShoppingCart.
+        return f"ShoppingCart [Total Price: {self._total_price}, Items Count: {len(self._items)}]"
+
+    # Getters and Setters for cart_id
+    def setCartId(self, cart_id):
+        setattr(self, "_cart_id", cart_id)
+
+    def getCartId(self):
+        return self._cart_id
+
+    # Getters and Setters for customer_id
+    def setCustomerId(self, customer_id):
+        setattr(self, "_customer_id", customer_id)
+
+    def getCustomerId(self):
+        return self._customer_id
+
+    # Getters and Setters for items
+    def setItems(self, items):
+        setattr(self, "_items", items)
+        # Recalculate the total price based on new items list
+        self._total_price = sum(item.getPrice() for item in items)
+
+    def getItems(self):
+        return self._items
+
+    # Add and remove items
+    def addItem(self, ebook):
+        """Adds an ebook to the shopping cart and updates the total price."""
+        self._items.append(ebook)
+        self._total_price += ebook.getPrice()
+
+    def removeItem(self, ebook):
+        """Removes an ebook from the shopping cart and updates the total price."""
+        if ebook in self._items:
+            self._items.remove(ebook)
+            self._total_price -= ebook.getPrice()
+
+    # Getters and Setters for total_price
+    def setTotalPrice(self, total_price):
+        setattr(self, "_total_price", total_price)
+
+    def getTotalPrice(self):
+        return self._total_price
+
+    def calculateTotal(self):
+        """Calculates the total price of the shopping cart."""
+        return self._total_price
+
+# Represents an order that can contain multiple items and a discount.
+class Order:
+    def __init__(self, order_id, order_date):
+        """Initializes an Order with order_id, order_date, and sets default total and discount."""
+        setattr(self, "_order_id", order_id)
+        setattr(self, "_order_date", order_date)
+        setattr(self, "_total_amount", 0.0)
+        setattr(self, "_discount", 0.0)
+        # Composition: Order contains PaymentProcessor, which is dependent on Order.
+        self.payment_processor = None
+
+    def __str__(self):
+        return (f"Order [ID: {self._order_id}, Date: {self._order_date}, "
+                f"Total Amount: {self._total_amount}, Discount: {self._discount}]")
+
+    # Getters and Setters
+    def setOrderId(self, order_id):
+        setattr(self, "_order_id", order_id)
+
+    def getOrderId(self):
+        return self._order_id
+
+    def setOrderDate(self, order_date):
+        setattr(self, "_order_date", order_date)
+
+    def getOrderDate(self):
+        return self._order_date
+
+    def setTotalAmount(self, total_amount):
+        setattr(self, "_total_amount", total_amount)
+
+    def getTotalAmount(self):
+        return self._total_amount
+
+    def setDiscount(self, discount):
+        setattr(self, "_discount", discount)
+
+    def getDiscount(self):
+        return self._discount
+
+    def createPaymentProcessor(self, payment_id, amount):
+        """Creates a PaymentProcessor for this order, showing composition."""
+        self.payment_processor = PaymentProcessor(payment_id, self._order_id, amount)
+
+    # Methods for calculating totals and applying discounts
+    def calculateTotal(self):
+        return self._total_amount
+
+    def applyLoyaltyDiscount(self):
+        self._discount = self._total_amount * 0.1  # Example: 10% loyalty discount
+
+    def applyBulkDiscount(self):
+        self._discount = self._total_amount * 0.2  # Example: 20% bulk discount
+
+    def calculateTotalWithDiscount(self):
+        return self._total_amount - self._discount
+
+# Represents an invoice that aggregates information from an Order and Customer.
+class Invoice:
+    def __init__(self, invoice_id, order_details, customer_details):
+        """Initializes an Invoice with invoice_id, order details, and customer details."""
+        # Aggregation: Invoice has a reference to an Order and Customer but does not own them.
+        setattr(self, "_invoice_id", invoice_id)
+        setattr(self, "_order_details", order_details)
+        setattr(self, "_customer_details", customer_details)
+        # Calculate the final total based on the order details when initializing
+        setattr(self, "_final_total", order_details.calculateTotalWithDiscount())
+        setattr(self, "_vat_rate", 0.08)
+
+    def __str__(self):
+        return f"Invoice [ID: {self._invoice_id}, Total: {self._final_total}, VAT Rate: {self._vat_rate}]"
+
+    # Getters and Setters
+    def setInvoiceId(self, invoice_id):
+        setattr(self, "_invoice_id", invoice_id)
+
+    def getInvoiceId(self):
+        return self._invoice_id
+
+    def setOrderDetails(self, order_details):
+        setattr(self, "_order_details", order_details)
+        # Update final total if the order details change
+        setattr(self, "_final_total", order_details.calculateTotalWithDiscount())
+
+    def getOrderDetails(self):
+        return self._order_details
+
+    def setCustomerDetails(self, customer_details):
+        setattr(self, "_customer_details", customer_details)
+
+    def getCustomerDetails(self):
+        return self._customer_details
+
+    def setFinalTotal(self, final_total):
+        setattr(self, "_final_total", final_total)
+
+    def getFinalTotal(self):
+        return self._final_total
+
+    # Method for calculating VAT and generating invoice
+    def generateInvoice(self):
+        """Generates a simple invoice string for display purposes."""
+        return f"Invoice ID: {self._invoice_id}, Total: {self._final_total}"
+
+    def calculateVAT(self):
+        # Calculates VAT based on the total price.
+        return self._final_total * self._vat_rate
+
+    def calculateTotalAfterVAT(self):
+        """Calculates the total price after applying VAT."""
+        return self._final_total * (1 + self._vat_rate)
+
+# Represents the process of making a payment for an order.
+class PaymentProcessor:
+    def __init__(self, payment_id, order_id, amount):
+        """Initializes a PaymentProcessor with payment_id, order_id, and amount."""
+        setattr(self, "_payment_id", payment_id)
+        setattr(self, "_order_id", order_id)
+        setattr(self, "_amount", amount)
+        setattr(self, "_status", False)
+
+    def __str__(self):
+        return f"PaymentProcessor [ID: {self._payment_id}, Order ID: {self._order_id}, Amount: {self._amount}]"
+
+    # Getters and Setters
+    def setPaymentId(self, payment_id):
+        setattr(self, "_payment_id", payment_id)
+
+    def getPaymentId(self):
+        return self._payment_id
+
+    def setOrderId(self, order_id):
+        setattr(self, "_order_id", order_id)
+
+    def getOrderId(self):
+        return self._order_id
+
+    def setAmount(self, amount):
+        setattr(self, "_amount", amount)
+
+    def getAmount(self):
+        return self._amount
+
+    def setStatus(self, status):
+        setattr(self, "_status", status)
+
+    def getStatus(self):
+        return self._status
+
+    # Methods for payment processing
+    def processPayment(self):
+        """Processes the payment, marking it as complete."""
+        self._status = True
+
+    def checkStatus(self):
+        return self._status
+
+    def refundPayment(self):
+        """Refunds the payment, marking it as incomplete."""
+        self._status = False
